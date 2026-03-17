@@ -1,742 +1,193 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <title>IPL Fantasy Friends</title>
-
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
-
-body{
-margin:0;
-font-family:Arial;
-background:#0f172a;
-color:white;
-}
-
-header{
-background:#1e293b;
-padding:20px;
-text-align:center;
-font-size:28px;
-font-weight:bold;
-}
-
-.container{
-max-width:1200px;
-margin:auto;
-padding:20px;
-}
-
-.card{
-background:#1e293b;
-padding:12px;
-border-radius:8px;
-margin:8px;
-}
-
-.players{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-gap:10px;
-}
-
-button{
-background:#f97316;
-border:none;
-padding:10px 18px;
-border-radius:6px;
-color:white;
-cursor:pointer;
-font-weight:bold;
-}
-
-input,select{
-padding:10px;
-border-radius:6px;
-border:none;
-margin:5px;
-}
-
-.hidden{
-display:none;
-}
-
-ul{
-list-style:none;
-padding:0;
-}
-
-li{
-background:#1e293b;
-padding:8px;
-margin:5px 0;
-border-radius:6px;
-}
-
+body{margin:0;font-family:Arial;background:#0f172a;color:white;}
+header{background:#1e293b;padding:20px;text-align:center;font-size:28px;font-weight:bold;}
+.container{max-width:1200px;margin:auto;padding:20px;}
+.card{background:#1e293b;padding:12px;border-radius:8px;margin:8px;}
+.players{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+button{background:#f97316;border:none;padding:10px 18px;border-radius:6px;color:white;cursor:pointer;font-weight:bold;}
+input,select{padding:10px;border-radius:6px;border:none;margin:5px;}
+.hidden{display:none;}
+ul{list-style:none;padding:0;}
+li{background:#1e293b;padding:8px;margin:5px 0;border-radius:6px;}
 </style>
-
 </head>
 
 <body>
 
-<header>
-IPL Fantasy League
-</header>
-
+<header>IPL Fantasy League</header>
 
 <div id="loginPage" class="container">
-
 <h2>Login</h2>
-
 <input id="loginName" placeholder="Enter username">
-
 <br>
-
 <button onclick="login()">Login</button>
-
 </div>
 
-
-
 <div id="mainPage" class="container hidden">
-
 <h2>Welcome <span id="user"></span></h2>
 
 <input id="search" placeholder="Search Player">
-
 <select id="teamFilter">
-
-<option value="ALL">All Teams</option>
-<option value="CSK">CSK</option>
-<option value="MI">MI</option>
-<option value="RCB">RCB</option>
-<option value="KKR">KKR</option>
-<option value="SRH">SRH</option>
-<option value="GT">GT</option>
-<option value="RR">RR</option>
-<option value="DC">DC</option>
-<option value="PBKS">PBKS</option>
-<option value="LSG">LSG</option>
-
+<option value="ALL">All</option>
+<option>CSK</option><option>MI</option><option>RCB</option>
+<option>KKR</option><option>SRH</option><option>GT</option>
+<option>RR</option><option>DC</option><option>PBKS</option><option>LSG</option>
 </select>
 
-<br><br>
-
 <div class="players" id="players"></div>
-
-<br>
 
 <button onclick="saveTeam()">Save Team</button>
 
 <h3>Your Team</h3>
-
 <ul id="teamList"></ul>
 
-<h3>Captain</h3>
-
-<select id="captain"></select>
-
-<h3>Vice Captain</h3>
-
-<select id="vice"></select>
-
+<button onclick="confirmTeam()">Go to Leaderboard</button>
 </div>
-
-
-<div id="previewPage" class="container hidden">
-
-<h2>Your Fantasy Team</h2>
-
-<ul id="previewTeam"></ul>
-
-<br>
-
-<button onclick="confirmTeam()">Confirm Team</button>
-
-<button onclick="editTeam()">Edit</button>
-
-</div>
-
-
 
 <div id="leaderPage" class="container hidden">
-
 <h2>Leaderboard</h2>
-
 <ul id="leaderboard"></ul>
-
 <button onclick="backHome()">Back</button>
-
 </div>
 
-
-
 <script>
 
-
+// PLAYERS
 const players=[
+["MS Dhoni","CSK"],["Ruturaj Gaikwad","CSK"],["Shivam Dube","CSK"],
+["Virat Kohli","RCB"],["Rohit Sharma","MI"],["Hardik Pandya","MI"],
+["Jasprit Bumrah","MI"],["Andre Russell","KKR"],["Rinku Singh","KKR"],
+["Pat Cummins","SRH"],["Heinrich Klaasen","SRH"],
+["Shubman Gill","GT"],["Rashid Khan","GT"],
+["Sanju Samson","RR"],["Yashasvi Jaiswal","RR"],
+["KL Rahul","DC"],["Axar Patel","DC"],
+["Shreyas Iyer","PBKS"],["Arshdeep Singh","PBKS"],
+["Rishabh Pant","LSG"],["Nicholas Pooran","LSG"]
+];
 
-["MS Dhoni","CSK"],
-["Ruturaj Gaikwad","CSK"],
-["Shivam Dube","CSK"],
-["Virat Kohli","RCB"],
-["Rohit Sharma","MI"],
-["Hardik Pandya","MI"],
-["Jasprit Bumrah","MI"],
-["Andre Russell","KKR"],
-["Rinku Singh","KKR"],
-["Pat Cummins","SRH"],
-["Heinrich Klaasen","SRH"],
-["Shubman Gill","GT"],
-["Rashid Khan","GT"],
-["Sanju Samson","RR"],
-["Yashasvi Jaiswal","RR"],
-["KL Rahul","DC"],
-["Axar Patel","DC"],
-["Shreyas Iyer","PBKS"],
-["Arshdeep Singh","PBKS"],
-["Rishabh Pant","LSG"],
-["Nicholas Pooran","LSG"]
-
-const players=[
-
-// CSK
-["MS Dhoni","CSK"],
-["Ruturaj Gaikwad","CSK"],
-["Shivam Dube","CSK"],
-["Sanju Samson","CSK"],
-["Rahul Chahar","CSK"],
-["Sarfaraz Khan","CSK"],
-["Matt Henry","CSK"],
-["Akeal Hosein","CSK"],
-["Noor Ahmad","CSK"],
-["Mukesh Choudhary","CSK"],
-["Khaleel Ahmed","CSK"],
-["Nathan Ellis","CSK"],
-["Jamie Overton","CSK"],
-["Dewald Brevis","CSK"],
-["Matthew Short","CSK"],
-["Prashant Veer","CSK"],
-["Kartik Sharma","CSK"],
-["Aman Khan","CSK"],
-["Ayush Mhatre","CSK"],
-["Ramakrishna Ghosh","CSK"],
-
-
-// RCB
-["Virat Kohli","RCB"],
-["Rajat Patidar","RCB"],
-["Phil Salt","RCB"],
-["Josh Hazlewood","RCB"],
-["Krunal Pandya","RCB"],
-["Bhuvneshwar Kumar","RCB"],
-["Tim David","RCB"],
-["Romario Shepherd","RCB"],
-["Suyash Sharma","RCB"],
-["Devdutt Padikkal","RCB"],
-["Jacob Bethell","RCB"],
-["Jitesh Sharma","RCB"],
-["Nuwan Thushara","RCB"],
-["Swapnil Singh","RCB"],
-["Rasikh Dar","RCB"],
-["Yash Dayal","RCB"],
-["Jordan Cox","RCB"],
-["Venkatesh Iyer","RCB"],
-["Mangesh Yadav","RCB"],
-["Vicky Ostwal","RCB"],
-
-
-// MI
-["Hardik Pandya","MI"],
-["Rohit Sharma","MI"],
-["Suryakumar Yadav","MI"],
-["Jasprit Bumrah","MI"],
-["Trent Boult","MI"],
-["Jonny Bairstow","MI"],
-["Will Jacks","MI"],
-["Rovman Powell","MI"],
-["Maheesh Theekshana","MI"],
-["Nathan Ellis","MI"],
-["Robin Minz","MI"],
-["Arjun Tendulkar","MI"],
-["Naman Dhir","MI"],
-["Karn Sharma","MI"],
-["Kumar Kushagra","MI"],
-["Ashwani Kumar","MI"],
-
-
-// KKR
-["Ajinkya Rahane","KKR"],
-["Rinku Singh","KKR"],
-["Andre Russell","KKR"],
-["Sunil Narine","KKR"],
-["Varun Chakravarthy","KKR"],
-["Cameron Green","KKR"],
-["Matheesha Pathirana","KKR"],
-["Rahmanullah Gurbaz","KKR"],
-["Rovman Powell","KKR"],
-["Manish Pandey","KKR"],
-["Umran Malik","KKR"],
-["Vaibhav Arora","KKR"],
-["Anrich Nortje","KKR"],
-["Finn Allen","KKR"],
-["Mustafizur Rahman","KKR"],
-["Prithvi Shaw","KKR"],
-["Rahul Tripathi","KKR"],
-
-
-// SRH
-["Pat Cummins","SRH"],
-["Sai Sudharsan","SRH"],
-["Abhishek Sharma","SRH"],
-["Tilak Varma","SRH"],
-["Heinrich Klaasen","SRH"],
-["Mitchell Marsh","SRH"],
-["Mohammed Shami","SRH"],
-["Harshal Patel","SRH"],
-["Kamindu Mendis","SRH"],
-["Abhinav Manohar","SRH"],
-["Jaydev Unadkat","SRH"],
-["Mujeeb Ur Rahman","SRH"],
-["Rahul Chahar","SRH"],
-["Aaron Hardie","SRH"],
-["Spencer Johnson","SRH"],
-
-
-// GT
-["Shubman Gill","GT"],
-["Jos Buttler","GT"],
-["Ishan Kishan","GT"],
-["Rashid Khan","GT"],
-["Mohammed Siraj","GT"],
-["Kagiso Rabada","GT"],
-["Rahul Tewatia","GT"],
-["Shahrukh Khan","GT"],
-["Mahipal Lomror","GT"],
-["Washington Sundar","GT"],
-["Anuj Rawat","GT"],
-["Prasidh Krishna","GT"],
-["Ishant Sharma","GT"],
-["Glenn Phillips","GT"],
-["Sai Kishore","GT"],
-
-
-// DC
-["KL Rahul","DC"],
-["Axar Patel","DC"],
-["Mitchell Starc","DC"],
-["Kuldeep Yadav","DC"],
-["Tristan Stubbs","DC"],
-["Abhishek Porel","DC"],
-["David Miller","DC"],
-["Prithvi Shaw","DC"],
-["Karun Nair","DC"],
-["Mukesh Kumar","DC"],
-["Dushmantha Chameera","DC"],
-["T Natarajan","DC"],
-["Ben Duckett","DC"],
-["Kyle Jamieson","DC"],
-["Lungi Ngidi","DC"],
-
-
-// RR
-["Sanju Samson","RR"],
-["Yashasvi Jaiswal","RR"],
-["Riyan Parag","RR"],
-["Dhruv Jurel","RR"],
-["Shimron Hetmyer","RR"],
-["Wanindu Hasaranga","RR"],
-["Jofra Archer","RR"],
-["Maheesh Theekshana","RR"],
-["Sandeep Sharma","RR"],
-["Akash Madhwal","RR"],
-["Vaibhav Sooryavanshi","RR"],
-
-
-// PBKS
-["Shreyas Iyer","PBKS"],
-["Marcus Stoinis","PBKS"],
-["Yuzvendra Chahal","PBKS"],
-["Arshdeep Singh","PBKS"],
-["Marco Jansen","PBKS"],
-["Prabhsimran Singh","PBKS"],
-["Nehal Wadhera","PBKS"],
-["Harpreet Brar","PBKS"],
-["Lockie Ferguson","PBKS"],
-["Vijaykumar Vyshak","PBKS"],
-["Yash Thakur","PBKS"],
-["Azmatullah Omarzai","PBKS"],
-
-
-// LSG
-["Rishabh Pant","LSG"],
-["Nicholas Pooran","LSG"],
-["Mitchell Marsh","LSG"],
-["Aiden Markram","LSG"],
-["Mayank Yadav","LSG"],
-["Avesh Khan","LSG"],
-["Mohsin Khan","LSG"],
-["Wanindu Hasaranga","LSG"],
-["Josh Inglis","LSG"],
-["Arjun Tendulkar","LSG"],
-["Digvesh Rathi","LSG"],
-["Prince Yadav","LSG"]
-
-]
-
-
-]
-
-
-
+// LOGIN
 function login(){
+let name=document.getElementById("loginName").value;
+if(name===""){alert("Enter username");return;}
 
-let name=document.getElementById("loginName").value
-
-if(name===""){
-alert("Enter username")
-return
+localStorage.setItem("user",name);
+document.getElementById("loginPage").classList.add("hidden");
+document.getElementById("mainPage").classList.remove("hidden");
+document.getElementById("user").textContent=name;
+renderPlayers();
 }
 
-localStorage.setItem("user",name)
-
-document.getElementById("loginPage").classList.add("hidden")
-
-document.getElementById("mainPage").classList.remove("hidden")
-
-document.getElementById("user").textContent=name
-
-renderPlayers()
-
-}
-
-
-
+// RENDER
 function renderPlayers(){
-
-let div=document.getElementById("players")
-
-div.innerHTML=""
-
-let search=document.getElementById("search").value.toLowerCase()
-
-let team=document.getElementById("teamFilter").value
-
+let div=document.getElementById("players");
+div.innerHTML="";
+let search=document.getElementById("search").value.toLowerCase();
+let team=document.getElementById("teamFilter").value;
 
 players.forEach(p=>{
-
-if(
-p[0].toLowerCase().includes(search)
-&&
-(team==="ALL"||p[1]===team)
-){
-
-let card=document.createElement("div")
-
-card.className="card"
-
-card.innerHTML=
-
-`<label>
-<input type="checkbox" value="${p[0]}">
-${p[0]} (${p[1]})
-</label>`
-
-div.appendChild(card)
-
+if(p[0].toLowerCase().includes(search)&&(team==="ALL"||p[1]===team)){
+let card=document.createElement("div");
+card.className="card";
+card.innerHTML=`<label><input type="checkbox" value="${p[0]}">${p[0]} (${p[1]})</label>`;
+div.appendChild(card);
+}
+});
 }
 
-})
+document.getElementById("search").oninput=renderPlayers;
+document.getElementById("teamFilter").onchange=renderPlayers;
 
-}
-
-
-
-document.getElementById("search").oninput=renderPlayers
-document.getElementById("teamFilter").onchange=renderPlayers
-
-
-
+// SAVE TEAM
 function saveTeam(){
-
-let selected=document.querySelectorAll("input:checked")
-
-if(selected.length>11){
-
-alert("Max 11 players")
-
-return
-
+let selected=document.querySelectorAll("input:checked");
+if(selected.length>11){alert("Max 11 players");return;}
+let team=[];
+selected.forEach(p=>team.push(p.value));
+localStorage.setItem("team",JSON.stringify(team));
+displayTeam(team);
 }
 
-let team=[]
-
-selected.forEach(p=>team.push(p.value))
-
-localStorage.setItem("team",JSON.stringify(team))
-
-displayTeam(team)
-
-}
-
-
-
+// DISPLAY TEAM
 function displayTeam(team){
-
-let ul=document.getElementById("teamList")
-
-ul.innerHTML=""
-
+let ul=document.getElementById("teamList");
+ul.innerHTML="";
 team.forEach(p=>{
-
-let li=document.createElement("li")
-
-li.textContent=p
-
-ul.appendChild(li)
-
-})
-
-populateCaptain(team)
-
-showPreview(team)
-
+let li=document.createElement("li");
+li.textContent=p;
+ul.appendChild(li);
+});
 }
 
-
-
-function populateCaptain(team){
-
-let cap=document.getElementById("captain")
-let vice=document.getElementById("vice")
-
-cap.innerHTML=""
-vice.innerHTML=""
-
-team.forEach(p=>{
-
-let o=document.createElement("option")
-o.textContent=p
-cap.appendChild(o)
-
-let o2=document.createElement("option")
-o2.textContent=p
-vice.appendChild(o2)
-
-})
-
-}
-
-
-
-function showPreview(team){
-
-document.getElementById("mainPage").classList.add("hidden")
-
-document.getElementById("previewPage").classList.remove("hidden")
-
-let ul=document.getElementById("previewTeam")
-
-ul.innerHTML=""
-
-team.forEach(p=>{
-
-let li=document.createElement("li")
-
-li.textContent=p
-
-ul.appendChild(li)
-
-})
-
-}
-
-
-
-function editTeam(){
-
-document.getElementById("previewPage").classList.add("hidden")
-
-document.getElementById("mainPage").classList.remove("hidden")
-
-}
-
-
-
+// CONFIRM
 function confirmTeam(){
-
-document.getElementById("previewPage").classList.add("hidden")
-
-document.getElementById("leaderPage").classList.remove("hidden")
-
-updateLeaderboard()
-
+document.getElementById("mainPage").classList.add("hidden");
+document.getElementById("leaderPage").classList.remove("hidden");
+saveToFirestore();
 }
 
-
-
-function updateLeaderboard(){
-
-let board=document.getElementById("leaderboard")
-
-board.innerHTML=""
-
-let name=localStorage.getItem("user")
-
-let points=Math.floor(Math.random()*150)
-
-let li=document.createElement("li")
-
-li.textContent=name+" - "+points+" pts"
-
-board.appendChild(li)
-
-}
-
-
-
+// BACK
 function backHome(){
-
-document.getElementById("leaderPage").classList.add("hidden")
-
-document.getElementById("mainPage").classList.remove("hidden")
-
+document.getElementById("leaderPage").classList.add("hidden");
+document.getElementById("mainPage").classList.remove("hidden");
 }
 
-
-
-function fetchLiveScore(){
-
-fetch("https://api.cricapi.com/v1/currentMatches?apikey=YOURKEY")
-
-.then(res=>res.json())
-
-.then(data=>{
-
-console.log("Live Matches",data)
-
-})
-
-}
-
-
-
-</script>
-<!-- Firebase CDN (Simple version) -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-<script>
+// FIREBASE CONFIG (✅ tera real wala)
 const firebaseConfig = {
-  apiKey: "AlzaSyB6JR0xr92i4Xr0eZpZobG0-4Zt8CdPVKw",
-  authDomain: "iplfantasy1-83e70.firebaseapp.com",
-  projectId: "iplfantasy1-83e70",
-  storageBucket: "iplfantasy1-83e70.appspot.com",
-  messagingSenderId: "1052173415349",
-  appId: "1:1052173415349:web:a1b7f88af49e6262d3dffc"
+apiKey: "AlzaSyB6JR0xr92i4Xr0eZpZobG0-4Zt8CdPVKw",
+authDomain: "iplfantasy1-83e70.firebaseapp.com",
+projectId: "iplfantasy1-83e70"
 };
 
 firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-</script>
-  
-<h2>Live IPL Matches</h2>
-
-<div id="liveMatches"></div>
-<!-- Firebase Libraries -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-<script>
-
-// 🔥 Firebase Config (tumhara wala)
-const firebaseConfig = {
-  apiKey: "AlzaSyB6JR0xr92i4Xr0eZpZobG0-4Zt8CdPVKw",
-  authDomain: "iplfantasy1-83e70.firebaseapp.com",
-  projectId: "iplfantasy1-83e70",
-  storageBucket: "iplfantasy1-83e70.appspot.com",
-  messagingSenderId: "1052173415349",
-  appId: "1:1052173415349:web:a1b7f88af49e6262d3dffc"
-};
-
-// 🔥 Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
 const db = firebase.firestore();
 
+// SAVE TO DB
+function saveToFirestore(){
+let name=localStorage.getItem("user");
+let team=JSON.parse(localStorage.getItem("team")||"[]");
 
-// 🔥 TEAM SAVE FUNCTION
-function saveTeamToDB(){
-
-let team = JSON.parse(localStorage.getItem("team") || "[]");
-
-let user = auth.currentUser;
-
-if(!user){
-alert("Login first");
-return;
-}
-
-db.collection("teams").doc(user.uid).set({
-name: user.email,
-team: team,
-captain: localStorage.getItem("captain"),
-vice: localStorage.getItem("vice"),
-points: 0
+db.collection("teams").doc(name).set({
+name:name,
+team:team,
+points:0
 });
-
-alert("Team saved to database");
-
 }
+
+// LOAD LEADERBOARD
 function loadLeaderboard(){
-
 db.collection("teams").onSnapshot(snapshot=>{
-
-let board = document.getElementById("leaderboard");
-board.innerHTML = "";
-
+let board=document.getElementById("leaderboard");
+board.innerHTML="";
 snapshot.forEach(doc=>{
-
-let data = doc.data();
-
-let li = document.createElement("li");
-
-li.innerText = data.name + " - " + data.points + " pts";
-
+let data=doc.data();
+let li=document.createElement("li");
+li.innerText=data.name+" - "+data.points+" pts";
 board.appendChild(li);
-
 });
-
 });
+}
 
+window.onload=loadLeaderboard;
+
+// LIVE MATCH API (✅ tera API)
+function fetchLiveScore(){
+fetch("https://api.cricapi.com/v1/currentMatches?apikey=PwD74O8801.453")
+.then(res=>res.json())
+.then(data=>{
+console.log("Live Matches:",data);
+});
 }
 
 </script>
-window.onload = function(){
-loadLeaderboard();
-}
-<button onclick="saveTeamToDB()">Save Team Online</button>
-<h2>Leaderboard</h2>
-<ul id="leaderboard"></ul>
-function saveTeamToDB(user, team){
 
-db.collection("teams").doc(user.uid).set({
-name: user.email,
-team: team,
-points: 0, // ✅ FIXED
-createdAt: new Date()
-});
-
-alert("Team Saved Successfully ✅");
-
-}
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 </body>
 </html>
