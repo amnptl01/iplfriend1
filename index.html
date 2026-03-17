@@ -457,6 +457,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 </script>
+  
 <h2>Live IPL Matches</h2>
 
 <div id="liveMatches"></div>
@@ -507,9 +508,36 @@ points: 0
 alert("Team saved to database");
 
 }
+function loadLeaderboard(){
+
+db.collection("teams").onSnapshot(snapshot=>{
+
+let board = document.getElementById("leaderboard");
+board.innerHTML = "";
+
+snapshot.forEach(doc=>{
+
+let data = doc.data();
+
+let li = document.createElement("li");
+
+li.innerText = data.name + " - " + data.points + " pts";
+
+board.appendChild(li);
+
+});
+
+});
+
+}
 
 </script>
+window.onload = function(){
+loadLeaderboard();
+}
 <button onclick="saveTeamToDB()">Save Team Online</button>
+<h2>Leaderboard</h2>
+<ul id="leaderboard"></ul>
 
 </body>
 </html>
