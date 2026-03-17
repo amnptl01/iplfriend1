@@ -460,6 +460,56 @@ const db = firebase.firestore();
 <h2>Live IPL Matches</h2>
 
 <div id="liveMatches"></div>
+<!-- Firebase Libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+
+// 🔥 Firebase Config (tumhara wala)
+const firebaseConfig = {
+  apiKey: "AlzaSyB6JR0xr92i4Xr0eZpZobG0-4Zt8CdPVKw",
+  authDomain: "iplfantasy1-83e70.firebaseapp.com",
+  projectId: "iplfantasy1-83e70",
+  storageBucket: "iplfantasy1-83e70.appspot.com",
+  messagingSenderId: "1052173415349",
+  appId: "1:1052173415349:web:a1b7f88af49e6262d3dffc"
+};
+
+// 🔥 Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+
+// 🔥 TEAM SAVE FUNCTION
+function saveTeamToDB(){
+
+let team = JSON.parse(localStorage.getItem("team") || "[]");
+
+let user = auth.currentUser;
+
+if(!user){
+alert("Login first");
+return;
+}
+
+db.collection("teams").doc(user.uid).set({
+name: user.email,
+team: team,
+captain: localStorage.getItem("captain"),
+vice: localStorage.getItem("vice"),
+points: 0
+});
+
+alert("Team saved to database");
+
+}
+
+</script>
+<button onclick="saveTeamToDB()">Save Team Online</button>
 
 </body>
 </html>
