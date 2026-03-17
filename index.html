@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>IPL Fantasy Pro</title>
+<title>IPL Fantasy Friends</title>
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -17,47 +17,62 @@ color:white;
 
 header{
 background:#1e293b;
-padding:15px;
+padding:20px;
 text-align:center;
-font-size:24px;
+font-size:28px;
+font-weight:bold;
 }
 
 .container{
-padding:15px;
+max-width:1200px;
+margin:auto;
+padding:20px;
 }
 
 .card{
 background:#1e293b;
-padding:10px;
-margin:5px;
+padding:12px;
 border-radius:8px;
+margin:8px;
 }
 
 .players{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-gap:8px;
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:10px;
 }
 
 button{
 background:#f97316;
 border:none;
-padding:10px;
+padding:10px 18px;
 border-radius:6px;
 color:white;
 cursor:pointer;
-margin-top:5px;
+font-weight:bold;
 }
 
 input,select{
-padding:8px;
-margin:5px;
+padding:10px;
 border-radius:6px;
 border:none;
+margin:5px;
 }
 
 .hidden{
 display:none;
+}
+
+ul{
+list-style:none;
+padding:0;
+}
+
+li{
+background:#1e293b;
+padding:8px;
+margin:5px 0;
+border-radius:6px;
 }
 
 </style>
@@ -66,23 +81,34 @@ display:none;
 
 <body>
 
-<header>IPL Fantasy Pro</header>
+<header>
+IPL Fantasy League
+</header>
 
-<!-- LOGIN -->
+
 <div id="loginPage" class="container">
+
 <h2>Login</h2>
-<input id="username" placeholder="Enter Name">
-<button onclick="login()">Enter</button>
+
+<input id="loginName" placeholder="Enter username">
+
+<br>
+
+<button onclick="login()">Login</button>
+
 </div>
 
-<!-- MAIN -->
+
+
 <div id="mainPage" class="container hidden">
 
-<h3>Welcome <span id="user"></span></h3>
+<h2>Welcome <span id="user"></span></h2>
 
 <input id="search" placeholder="Search Player">
+
 <select id="teamFilter">
-<option value="ALL">All</option>
+
+<option value="ALL">All Teams</option>
 <option value="CSK">CSK</option>
 <option value="MI">MI</option>
 <option value="RCB">RCB</option>
@@ -93,222 +119,327 @@ display:none;
 <option value="DC">DC</option>
 <option value="PBKS">PBKS</option>
 <option value="LSG">LSG</option>
+
 </select>
+
+<br><br>
 
 <div class="players" id="players"></div>
 
+<br>
+
 <button onclick="saveTeam()">Save Team</button>
 
+<h3>Your Team</h3>
+
+<ul id="teamList"></ul>
+
 <h3>Captain</h3>
+
 <select id="captain"></select>
 
 <h3>Vice Captain</h3>
+
 <select id="vice"></select>
 
 </div>
 
-<!-- PREVIEW -->
+
 <div id="previewPage" class="container hidden">
-<h2>Your Team</h2>
+
+<h2>Your Fantasy Team</h2>
+
 <ul id="previewTeam"></ul>
-<button onclick="confirmTeam()">Confirm</button>
-<button onclick="back()">Edit</button>
+
+<br>
+
+<button onclick="confirmTeam()">Confirm Team</button>
+
+<button onclick="editTeam()">Edit</button>
+
 </div>
 
-<!-- LEADERBOARD -->
+
+
 <div id="leaderPage" class="container hidden">
+
 <h2>Leaderboard</h2>
+
 <ul id="leaderboard"></ul>
 
-<h2>Live Matches</h2>
-<div id="liveMatches"></div>
-
 <button onclick="backHome()">Back</button>
+
 </div>
+
+
 
 <script>
 
-// LOGIN
+
+const players=[
+
+["MS Dhoni","CSK"],
+["Ruturaj Gaikwad","CSK"],
+["Shivam Dube","CSK"],
+["Virat Kohli","RCB"],
+["Rohit Sharma","MI"],
+["Hardik Pandya","MI"],
+["Jasprit Bumrah","MI"],
+["Andre Russell","KKR"],
+["Rinku Singh","KKR"],
+["Pat Cummins","SRH"],
+["Heinrich Klaasen","SRH"],
+["Shubman Gill","GT"],
+["Rashid Khan","GT"],
+["Sanju Samson","RR"],
+["Yashasvi Jaiswal","RR"],
+["KL Rahul","DC"],
+["Axar Patel","DC"],
+["Shreyas Iyer","PBKS"],
+["Arshdeep Singh","PBKS"],
+["Rishabh Pant","LSG"],
+["Nicholas Pooran","LSG"]
+
+]
+
+
+
 function login(){
-let name=document.getElementById("username").value;
-if(!name){alert("Enter name");return;}
-localStorage.setItem("user",name);
-document.getElementById("loginPage").classList.add("hidden");
-document.getElementById("mainPage").classList.remove("hidden");
-document.getElementById("user").innerText=name;
-renderPlayers();
+
+let name=document.getElementById("loginName").value
+
+if(name===""){
+alert("Enter username")
+return
+}
+
+localStorage.setItem("user",name)
+
+document.getElementById("loginPage").classList.add("hidden")
+
+document.getElementById("mainPage").classList.remove("hidden")
+
+document.getElementById("user").textContent=name
+
+renderPlayers()
+
 }
 
 
-// PLAYERS (SHORT SAMPLE - tum apni full list replace kar sakte ho)
-const players=[
-["MS Dhoni","CSK"],["Virat Kohli","RCB"],["Rohit Sharma","MI"],
-["Hardik Pandya","MI"],["Rinku Singh","KKR"],["Pat Cummins","SRH"],
-["Shubman Gill","GT"],["Sanju Samson","RR"],["KL Rahul","DC"],
-["Shreyas Iyer","PBKS"],["Rishabh Pant","LSG"]
-];
 
-
-// RENDER
 function renderPlayers(){
-let div=document.getElementById("players");
-div.innerHTML="";
-let search=document.getElementById("search").value.toLowerCase();
-let team=document.getElementById("teamFilter").value;
+
+let div=document.getElementById("players")
+
+div.innerHTML=""
+
+let search=document.getElementById("search").value.toLowerCase()
+
+let team=document.getElementById("teamFilter").value
+
 
 players.forEach(p=>{
-if(p[0].toLowerCase().includes(search) && (team==="ALL"||p[1]===team)){
-let c=document.createElement("div");
-c.className="card";
-c.innerHTML=`<input type="checkbox" value="${p[0]}"> ${p[0]} (${p[1]})`;
-div.appendChild(c);
+
+if(
+p[0].toLowerCase().includes(search)
+&&
+(team==="ALL"||p[1]===team)
+){
+
+let card=document.createElement("div")
+
+card.className="card"
+
+card.innerHTML=
+
+`<label>
+<input type="checkbox" value="${p[0]}">
+${p[0]} (${p[1]})
+</label>`
+
+div.appendChild(card)
+
 }
-});
+
+})
+
 }
 
-document.getElementById("search").oninput=renderPlayers;
-document.getElementById("teamFilter").onchange=renderPlayers;
 
 
-// SAVE TEAM
+document.getElementById("search").oninput=renderPlayers
+document.getElementById("teamFilter").onchange=renderPlayers
+
+
+
 function saveTeam(){
-let sel=document.querySelectorAll("input:checked");
-if(sel.length>11){alert("Max 11");return;}
 
-let team=[];
-sel.forEach(x=>team.push(x.value));
+let selected=document.querySelectorAll("input:checked")
 
-localStorage.setItem("team",JSON.stringify(team));
+if(selected.length>11){
 
-populateCaptain(team);
-showPreview(team);
+alert("Max 11 players")
+
+return
+
+}
+
+let team=[]
+
+selected.forEach(p=>team.push(p.value))
+
+localStorage.setItem("team",JSON.stringify(team))
+
+displayTeam(team)
+
 }
 
 
-// CAPTAIN
+
+function displayTeam(team){
+
+let ul=document.getElementById("teamList")
+
+ul.innerHTML=""
+
+team.forEach(p=>{
+
+let li=document.createElement("li")
+
+li.textContent=p
+
+ul.appendChild(li)
+
+})
+
+populateCaptain(team)
+
+showPreview(team)
+
+}
+
+
+
 function populateCaptain(team){
-let cap=document.getElementById("captain");
-let vice=document.getElementById("vice");
 
-cap.innerHTML="";
-vice.innerHTML="";
+let cap=document.getElementById("captain")
+let vice=document.getElementById("vice")
+
+cap.innerHTML=""
+vice.innerHTML=""
 
 team.forEach(p=>{
-let o=document.createElement("option");
-o.text=p;
-cap.appendChild(o);
 
-let o2=document.createElement("option");
-o2.text=p;
-vice.appendChild(o2);
-});
+let o=document.createElement("option")
+o.textContent=p
+cap.appendChild(o)
+
+let o2=document.createElement("option")
+o2.textContent=p
+vice.appendChild(o2)
+
+})
+
 }
 
 
-// PREVIEW
+
 function showPreview(team){
-document.getElementById("mainPage").classList.add("hidden");
-document.getElementById("previewPage").classList.remove("hidden");
 
-let ul=document.getElementById("previewTeam");
-ul.innerHTML="";
+document.getElementById("mainPage").classList.add("hidden")
+
+document.getElementById("previewPage").classList.remove("hidden")
+
+let ul=document.getElementById("previewTeam")
+
+ul.innerHTML=""
+
 team.forEach(p=>{
-let li=document.createElement("li");
-li.innerText=p;
-ul.appendChild(li);
-});
+
+let li=document.createElement("li")
+
+li.textContent=p
+
+ul.appendChild(li)
+
+})
+
 }
 
 
-// BACK
-function back(){
-document.getElementById("previewPage").classList.add("hidden");
-document.getElementById("mainPage").classList.remove("hidden");
+
+function editTeam(){
+
+document.getElementById("previewPage").classList.add("hidden")
+
+document.getElementById("mainPage").classList.remove("hidden")
+
 }
 
 
-// CONFIRM
+
 function confirmTeam(){
 
-localStorage.setItem("captain",document.getElementById("captain").value);
-localStorage.setItem("vice",document.getElementById("vice").value);
+document.getElementById("previewPage").classList.add("hidden")
 
-document.getElementById("previewPage").classList.add("hidden");
-document.getElementById("leaderPage").classList.remove("hidden");
+document.getElementById("leaderPage").classList.remove("hidden")
 
-updateLeaderboard();
-getLiveScore();
+updateLeaderboard()
+
 }
 
 
-// POINT SYSTEM
-function calcPoints(){
-let team=JSON.parse(localStorage.getItem("team")||"[]");
 
-let total=0;
-
-team.forEach(p=>{
-let pts=Math.floor(Math.random()*50);
-
-if(p===localStorage.getItem("captain")) pts*=2;
-if(p===localStorage.getItem("vice")) pts*=1.5;
-
-total+=pts;
-});
-
-return Math.floor(total);
-}
-
-
-// LEADERBOARD
 function updateLeaderboard(){
-let name=localStorage.getItem("user");
-let pts=calcPoints();
 
-let li=document.createElement("li");
-li.innerText=name+" - "+pts+" pts";
+let board=document.getElementById("leaderboard")
 
-let board=document.getElementById("leaderboard");
-board.innerHTML="";
-board.appendChild(li);
+board.innerHTML=""
+
+let name=localStorage.getItem("user")
+
+let points=Math.floor(Math.random()*150)
+
+let li=document.createElement("li")
+
+li.textContent=name+" - "+points+" pts"
+
+board.appendChild(li)
+
 }
 
 
-// LIVE API
-function getLiveScore(){
 
-fetch("https://api.cricapi.com/v1/currentMatches?apikey=PwD74O8801.453")
+function backHome(){
+
+document.getElementById("leaderPage").classList.add("hidden")
+
+document.getElementById("mainPage").classList.remove("hidden")
+
+}
+
+
+
+function fetchLiveScore(){
+
+fetch("https://api.cricapi.com/v1/currentMatches?apikey=YOURKEY")
+
 .then(res=>res.json())
+
 .then(data=>{
 
-let div=document.getElementById("liveMatches");
-div.innerHTML="";
+console.log("Live Matches",data)
 
-if(!data.data) return;
-
-data.data.slice(0,3).forEach(m=>{
-
-let d=document.createElement("div");
-d.className="card";
-
-d.innerHTML=`<b>${m.name}</b><br>${m.status}`;
-
-div.appendChild(d);
-
-});
-
-});
+})
 
 }
 
 
-// BACK HOME
-function backHome(){
-document.getElementById("leaderPage").classList.add("hidden");
-document.getElementById("mainPage").classList.remove("hidden");
-}
 
 </script>
 
 </body>
 </html>
+<h2>Live IPL Matches</h2>
+
+<div id="liveMatches"></div>
