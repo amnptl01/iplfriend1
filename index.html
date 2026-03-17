@@ -437,9 +437,29 @@ console.log("Live Matches",data)
 
 
 </script>
+<!-- Firebase CDN (Simple version) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-</body>
-</html>
+<script>
+const firebaseConfig = {
+  apiKey: "AlzaSyB6JR0xr92i4Xr0eZpZobG0-4Zt8CdPVKw",
+  authDomain: "iplfantasy1-83e70.firebaseapp.com",
+  projectId: "iplfantasy1-83e70",
+  storageBucket: "iplfantasy1-83e70.appspot.com",
+  messagingSenderId: "1052173415349",
+  appId: "1:1052173415349:web:a1b7f88af49e6262d3dffc"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+</script>
 <h2>Live IPL Matches</h2>
 
 <div id="liveMatches"></div>
+
+</body>
+</html>
